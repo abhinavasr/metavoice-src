@@ -127,6 +127,10 @@ def prefill(
     input_pos: torch.Tensor,
     **sampling_kwargs,
 ) -> torch.Tensor:
+    dtype = spk_emb.dtype  # Assume spk_emb has the desired dtype
+    x = x.type(dtype)
+    spk_emb = spk_emb.type(dtype)
+    input_pos = input_pos.type(dtype)
     # input_pos: [B, S]
     logits = model(x, spk_emb, input_pos)
     return sample(logits, **sampling_kwargs)[0]
