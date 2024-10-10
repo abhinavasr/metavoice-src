@@ -127,21 +127,13 @@ def prefill(
     input_pos: torch.Tensor,
     **sampling_kwargs,
 ) -> torch.Tensor:
-    with torch.no_grad():
-        # call the model with the prompt and speaker embedding
-        logits = model(prompt.type(torch.float16), spk_emb, input_pos) # Cast 'prompt' to torch.float16
-        # get the last token
-        last_token = logits[:, -1, :]
-        # sample the next token
-        next_token = sample_logits(last_token, **sampling_kwargs)
-    return next_token
-    # dtype = spk_emb.dtype  # Assume spk_emb has the desired dtype
-    # x = x.type(dtype)
-    # spk_emb = spk_emb.type(dtype)
-    # input_pos = input_pos.type(dtype)
-    # # input_pos: [B, S]
-    # logits = model(x, spk_emb, input_pos)
-    # return sample(logits, **sampling_kwargs)[0]
+    dtype = torch.float16  # Assume spk_emb has the desired dtype
+    x = x.type(dtype)
+    spk_emb = spk_emb.type(dtype)
+    input_pos = input_pos.type(dtype)
+    # input_pos: [B, S]
+    logits = model(x, spk_emb, input_pos)
+    return sample(logits, **sampling_kwargs)[0]
 
 
 def decode_one_token(
